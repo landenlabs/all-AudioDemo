@@ -55,10 +55,17 @@ import java.util.Locale;
 import static com.wsi.all_audiodemo.notify.NotifyUtil.notifySound;
 
 /**
- * Demonstrate how to play a sound mp2 file by accessing  asset mp2 file two different ways and
+ * Demonstrate how to play a sound mp3 file by accessing  asset mp3 file several different ways and
  * playing  either in foreground or background.
  * <p>
  * Also include some code to show information in notification bar using channels.
+ * 
+ * Audio play techniques:
+ *  1. Access mp3 via Raw asset path, play in foreground
+ *  2. Access mp3 via Asset path, play in foreground
+ *  3. Access mp3 via network
+ *  4. Play and notify in foreground using notification
+ *  5. Play and notify in Background using notification
  */
 @SuppressWarnings({"ConstantConditions", "ConstantIfStatement"})
 public class MainActivity extends AppCompatActivity {
@@ -79,42 +86,53 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= 21) {
             Toolbar toolbar = findViewById(R.id.app_bar);
             setSupportActionBar(toolbar);
+
+            // versionName built at build time.
+            setTitle(getString(R.string.app_name) + " " + getString(R.string.versionName));
         }
 
         setupSoundSelectionView();
         mSoundName = findViewById(R.id.soundName);
         mAboutView = findViewById(R.id.about_text);
 
-        // 1. Play and notify in foreground
-        findViewById(R.id.notifyFg).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                notifySoundFg(mSound);
-            }
-        });
-        // 2. Play and notify in Background
-        findViewById(R.id.notifyBg).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                notifySoundBg(mSound);
-            }
-        });
-        // 3. Access mp2 via Raw asset path, play in foreground
+
+        // 1. Access mp3 via Raw asset path, play in foreground
         findViewById(R.id.playRawBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 playRawSound(mSound);
             }
         });
-        // 4. Access mp2 via Asset path, play in foreground
+        // 2. Access mp3 via Asset path, play in foreground
         findViewById(R.id.playAssetBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 playAssetSound(mSound);
             }
         });
+        // 3. Access mp3 via network, play in foreground
+        findViewById(R.id.playNetworkBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playNetworkSound("http://landenlabs.com/android/audiodemo/sounds/" + mSound + ".mp3");
+            }
+        });
+        // 4. Play and notify in foreground using notification
+        findViewById(R.id.notifyFg).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                notifySoundFg(mSound);
+            }
+        });
+        // 5. Play and notify in Background using notification
+        findViewById(R.id.notifyBg).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                notifySoundBg(mSound);
+            }
+        });
 
-        // Setup notification - used for option #1 and #2 above.
+        // Setup notification - used for option #4 and #5 above.
         NotifyChannels.initChannels(this);
         mManageService = new ManageService(getApplication());
         mManageService.install();
@@ -197,9 +215,8 @@ public class MainActivity extends AppCompatActivity {
         notifySound(getApplicationContext(), assetName, NotifyUtil.getIsForeground(mSoundName));
     }
 
-
     /**
-     * Example playing sound with in-package resource.
+     * Example playing sound with in-package resource id.
      */
     @SuppressWarnings("unused")
     private void playSound() {
@@ -241,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
             mSoundName.setText(path);
 
             mMediaPlayer = new MediaPlayer();
-            // mMediaPlayer.setVolume(1.0f, 1.0f);
+            mMediaPlayer.setVolume(1.0f, 1.0f);
             mMediaPlayer.setLooping(false);
             mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -261,31 +278,15 @@ public class MainActivity extends AppCompatActivity {
             });
 
             //
-            //  Three different ways to load audio into player:
+            //  Different ways to load audio into player:
             //   1. Using path to resource by name or by id
-            //   2. Accessing external data not found inside package. SD card or network.
-            //      May require settings in AndroidManifest to enable ClearText and internet permission.
-            //   3. Using content provider to load audio and passing a file descriptor.
+            //   2. Using content provider to load audio and passing a file descriptor.
             if (true) {
                 // 1. open audio using path to data inside package
                 mMediaPlayer.setDataSource(getApplicationContext(), soundUri);
                 mMediaPlayer.prepare();
-            } else if (false) {
-                // 2.  How to load external audio files from SD card or network.
-                //   "/sdcard/sample.mp3";
-                //   "http://www.bogotobogo.com/Audio/sample.mp3";
-                // see supported file formats
-                //   https://developer.android.com/guide/topics/media/media-formats
-                // see enable cleartext
-                //   https://stackoverflow.com/questions/45940861/android-8-cleartext-http-traffic-not-permitted
-                // Add network permission to AndroidManifest.xml
-                //   <uses-permission android:name="android.permission.INTERNET" />
-                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mMediaPlayer.setDataSource("http://landenlabs.com/android/audiodemo/alert_air_horn.mp3");
-                // mMediaPlayer = MediaPlayer.create(this, Uri.parse("http://landenlabs.com/android/audiodemo/alert_air_horn.mp3"));
-                mMediaPlayer.prepareAsync();
-            } else {
-                // 3. Load using content provider, passing file descriptor.
+            }   else {
+                // 2. Load using content provider, passing file descriptor.
                 ContentResolver resolver = getContentResolver();
                 AssetFileDescriptor afd = resolver.openAssetFileDescriptor(soundUri, "r");
                 mMediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
@@ -312,6 +313,54 @@ public class MainActivity extends AppCompatActivity {
             afd.close();
             mMediaPlayer.prepare();
             mMediaPlayer.start();
+        } catch (Exception ex) {
+            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Play sound file from remote location.
+     * Accessing external data not found inside package. SD card or network.
+     *   "/sdcard/sample.mp3";
+     *   "http://www.bogotobogo.com/Audio/sample.mp3";
+     *
+     * May require settings in AndroidManifest to enable ClearText and internet permission.
+     *
+     * See supported file formats
+     *   https://developer.android.com/guide/topics/media/media-formats
+     * See enable cleartext if network path is using http. Not required for https
+     *   https://stackoverflow.com/questions/45940861/android-8-cleartext-http-traffic-not-permitted
+     * Add network permission to AndroidManifest.xml
+     *   <uses-permission android:name="android.permission.INTERNET" />
+     */
+    private void playNetworkSound(String netUrl) {
+        try {
+            mSoundName.setText(netUrl);
+
+            mMediaPlayer = new MediaPlayer();
+            // mMediaPlayer.setVolume(1.0f, 1.0f);
+            mMediaPlayer.setLooping(false);
+            mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    Toast.makeText(getApplicationContext(),
+                            "start playing sound", Toast.LENGTH_SHORT).show();
+                    mMediaPlayer.start();
+                }
+            });
+            mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                @Override
+                public boolean onError(MediaPlayer mp, int what, int extra) {
+                    Toast.makeText(getApplicationContext(), String.format(Locale.US,
+                            "Media error what=%d extra=%d", what, extra), Toast.LENGTH_LONG).show();
+                    return false;
+                }
+            });
+
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mMediaPlayer.setDataSource(netUrl);
+            mMediaPlayer.prepareAsync();        // Use prepareAsync for external sources.
+
         } catch (Exception ex) {
             Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
@@ -362,9 +411,7 @@ public class MainActivity extends AppCompatActivity {
                 "weather_thunder1",
                 "weather_thunder2",
                 "weather_thunder3",
-                "weather_wind",
-
-                "test_hurwrn"
+                "weather_wind"
         };
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,

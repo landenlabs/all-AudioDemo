@@ -34,11 +34,37 @@
         android:layout_margin="@dimen/text_margin"
         android:text="@string/default_sound" />
 
-    <LinearLayout
+    <HorizontalScrollView
         android:id="@+id/button_bar"
         android:layout_below="@+id/soundName"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/playRawBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/raw"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/playAssetBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/asset"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/playNetworkBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/network"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/notifyFg"
@@ -55,22 +81,9 @@
             android:textAllCaps="false"
             android:visibility="visible" />
 
-        <Button
-            android:id="@+id/playRawBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/raw"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/playAssetBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/asset"
-            android:textAllCaps="false" />
-
     </LinearLayout>
 
+    </HorizontalScrollView>
     <ListView
         android:layout_below="@+id/button_bar"
         android:id="@+id/listview"

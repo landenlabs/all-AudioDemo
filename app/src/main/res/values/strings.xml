@@ -7,5 +7,6 @@
     <string name="notify_bg">Notify Bg</string>
     <string name="raw">Raw</string>
     <string name="asset">Asset</string>
+    <string name="network">Network</string>
     <string name="default_sound">alert_air_horn</string>
 </resources>
