@@ -37,7 +37,9 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".AlertService" android:exported="false"/>
+
+        <activity android:name=".notify.NotifyActivity" />
+        <service android:name=".notify.NotifyService" android:exported="false"/>
     </application>
 
 </manifest>

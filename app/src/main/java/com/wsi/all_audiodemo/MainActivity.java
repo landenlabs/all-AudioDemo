@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Dennis Lang (LanDen Labs) landenlabs@gmail.com
+ * Copyright (c) 2019 Dennis Lang (LanDen Labs) landenlabs@gmail.com
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the "Software"), to deal in the Software without restriction, including
@@ -16,34 +16,23 @@
  * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * @author Dennis Lang  (8/3/2018)
+ * @author Dennis Lang  (30-Dec-2019)
  * @see http://LanDenLabs.com/
  *
  */
 
 package com.wsi.all_audiodemo;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
-import android.graphics.Bitmap;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.RawRes;
-import androidx.core.app.NotificationCompat;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,10 +42,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import com.wsi.all_audiodemo.notify.ManageService;
+import com.wsi.all_audiodemo.notify.NotifyChannels;
+import com.wsi.all_audiodemo.notify.NotifyUtil;
+
 import java.io.File;
 import java.util.Locale;
 
-import static com.wsi.all_audiodemo.AppNotificationChannels.INVALID_RES_ID;
+import static com.wsi.all_audiodemo.notify.NotifyUtil.notifySound;
 
 /**
  * Demonstrate how to play a sound mp2 file by accessing  asset mp2 file two different ways and
@@ -67,15 +63,19 @@ import static com.wsi.all_audiodemo.AppNotificationChannels.INVALID_RES_ID;
 @SuppressWarnings({"ConstantConditions", "ConstantIfStatement"})
 public class MainActivity extends AppCompatActivity {
 
-    String mSound = "blzwrn";
+    String mSound = "alert_air_horn";
     ListView mListView;
     TextView mSoundName;
+    View mAboutView;
     ManageService mManageService;
+
+    // https://github.com/codepath/android_guides/wiki/Video-and-Audio-Playback-and-Recording
+    MediaPlayer mMediaPlayer = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scrolling);
+        setContentView(R.layout.activity_main);
         if (Build.VERSION.SDK_INT >= 21) {
             Toolbar toolbar = findViewById(R.id.app_bar);
             setSupportActionBar(toolbar);
@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
         setupSoundSelectionView();
         mSoundName = findViewById(R.id.soundName);
+        mAboutView = findViewById(R.id.about_text);
 
         // 1. Play and notify in foreground
         findViewById(R.id.notifyFg).setOnClickListener(new View.OnClickListener() {
@@ -113,16 +114,33 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        AppNotificationChannels.initChannels(this);     // For fun show status in notification
-
+        // Setup notification - used for option #1 and #2 above.
+        NotifyChannels.initChannels(this);
         mManageService = new ManageService(getApplication());
         mManageService.install();
+
+        // Handle Notification button press.
+        Intent intent = getIntent();
+        if (intent != null) {
+            String action = intent.getAction();
+            String intentSound = intent.getStringExtra(NotifyUtil.EXTRA_AUDIO);
+            if (!TextUtils.isEmpty(intentSound)) {
+                for (int idx = 0; idx < mListView.getAdapter().getCount(); idx++) {
+                    if (mListView.getAdapter().getItem(idx).equals(intentSound)) {
+                        mSound = intentSound;
+                        mListView.setSelection(idx);
+                        playRawSound(mSound);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_scrolling, menu);
+        getMenuInflater().inflate(R.menu.menu_option, menu);
         return true;
     }
 
@@ -134,7 +152,14 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.menu_about) {
+            mAboutView.setVisibility(View.VISIBLE);
+            mAboutView.findViewById(R.id.about_close).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mAboutView.setVisibility(View.GONE);
+                }
+            });
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -143,7 +168,13 @@ public class MainActivity extends AppCompatActivity {
     // ---------------------------------------------------------------------------------------------
     // Private class logic
 
-
+    /**
+     * Play sound in background:
+     *   1. Move activity to back of stack
+     *   2. Bring home page of device into view.
+     *   3. Sleep for 2 seconds to make sure we are in background.
+     *   4. Play sound using notification, update notification msg.
+     */
     private void notifySoundBg(String assetName) {
         //  JobScheduler
         boolean sentAppToBackground =  moveTaskToBack(true);
@@ -155,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         new Handler().postDelayed (() -> {
-            notifySound(assetName);
+            notifySound(getApplicationContext(), assetName, NotifyUtil.getIsForeground(mSoundName));
         }, 2000);
     }
 
@@ -163,61 +194,13 @@ public class MainActivity extends AppCompatActivity {
      * Play sound in foreground using a notification.
      */
     private void notifySoundFg(String assetName) {
-        notifySound(assetName);
+        notifySound(getApplicationContext(), assetName, NotifyUtil.getIsForeground(mSoundName));
     }
 
-    private void notifySound(String assetName) {
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        // Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        String RESOURCE_PATH = ContentResolver.SCHEME_ANDROID_RESOURCE + "://";
-
-        String path;
-        @RawRes int soundRes = INVALID_RES_ID;
-        if (false) {
-            path = RESOURCE_PATH + getPackageName() + "/raw/" + assetName;
-        } else {
-            soundRes = getResources().getIdentifier(assetName, "raw", getPackageName());
-            path = RESOURCE_PATH + getPackageName() + File.separator + soundRes;
-        }
-        Uri soundUri = Uri.parse(path);
-        int notificationId = 10;
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            Bitmap iconBM  = ((BitmapDrawable)getDrawable(R.mipmap.ic_launcher)).getBitmap();
-
-            Rect rect = new Rect();
-            boolean isForeground = mSoundName != null && mSoundName.isShown()
-                    && mSoundName.getGlobalVisibleRect(rect) && !rect.isEmpty();
-            isForeground |=  mSoundName.getWindowSystemUiVisibility() == View.VISIBLE
-                    && mSoundName.getWindowVisibility() == View.VISIBLE;
-
-            NotificationChannel notificationChannel =
-                    AppNotificationChannels.setSound(this, AppNotificationChannels.Channel.ALERTS, soundRes);
-            Notification notification = new NotificationCompat.Builder(getApplicationContext(),
-                    notificationChannel.getId())
-                    .setContentTitle("Played sound")
-                    .setContentText((isForeground ? "Foreground":"Background") + " sound " + assetName)
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setLargeIcon(iconBM)
-                    .build();
-
-            AppNotificationChannels.notify(this, notificationId, notification);
-        } else {
-            @SuppressWarnings("deprecation") NotificationCompat.Builder mBuilder =
-                    new NotificationCompat.Builder(getApplicationContext())
-                            .setContentTitle("Title")
-                            .setContentText("Message")
-                            .setSmallIcon(R.mipmap.ic_launcher)
-                            .setSound(soundUri); //This sets the sound to play
-
-            notificationManager.notify(notificationId, mBuilder.build());
-        }
-    }
-
-    // https://github.com/codepath/android_guides/wiki/Video-and-Audio-Playback-and-Recording
-    MediaPlayer mMediaPlayer = null;
-
+    /**
+     * Example playing sound with in-package resource.
+     */
     @SuppressWarnings("unused")
     private void playSound() {
         // Play sound using  resource reference.
@@ -263,14 +246,16 @@ public class MainActivity extends AppCompatActivity {
             mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    Toast.makeText(getApplicationContext(), "start playing sound", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),
+                            "start playing sound", Toast.LENGTH_SHORT).show();
                     mMediaPlayer.start();
                 }
             });
             mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
-                    Toast.makeText(getApplicationContext(), String.format(Locale.US, "Media error what=%d extra=%d", what, extra), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), String.format(Locale.US,
+                            "Media error what=%d extra=%d", what, extra), Toast.LENGTH_LONG).show();
                     return false;
                 }
             });
