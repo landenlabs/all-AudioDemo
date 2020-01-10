@@ -6,3 +6,6 @@ android:
     - android-29
     - extra
     
+script:
+    - ./gradlew assembleDebug
+    
