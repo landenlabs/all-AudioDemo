@@ -9,13 +9,14 @@ android:
 script:
     - ./gradlew assembleDebug
     
-deploy:
-  provider: pages
-  skip_cleanup: true
-  github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
-  keep_history: false
-  verbose: false
-  file: "./app/build/outputs/apk/debug/all-AudioDemo-debug-5.02.apk"
-  on:
-    branch: master
+#     
+# deploy:
+#   provider: pages
+#   skip_cleanup: true
+#   github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+#   keep_history: false
+#   verbose: false
+#   file: "./app/build/outputs/apk/debug/all-AudioDemo-debug-5.02.apk"
+#   on:
+#     branch: master
     
