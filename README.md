@@ -7,6 +7,9 @@ Also includes sample code to play audio from external souerces such as **SD card
 **Warning** the audio files are pulled from various sources with undefined copyright, so use at your own peril.
 
 
+  [![Build status](https://travis-ci.org/landenlabs/all_AudioDemo.svg?branch=master)](https://travis-ci.org/landenlabs/all_AudioDemo)
+  
+
 Apk available in **app/build** directory 
 
 ![assets directory](https://raw.github.com/landenlabs2/all_AudioDemo/master/screenshots/audiodemo.png)
