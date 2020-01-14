@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:ignore="ButtonStyle">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/app_bar_height"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        android:fitsSystemWindows="true"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <TextView
+        android:id="@+id/main_title"
+        android:layout_below="@+id/app_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/main_title" />
+
+    <TextView
+        android:layout_below="@+id/main_title"
+        android:id="@+id/soundName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_sound" />
+
+    <HorizontalScrollView
+        android:id="@+id/button_bar"
+        android:layout_below="@+id/soundName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/playRawBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/raw"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/playAssetBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/asset"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/playNetworkBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/network"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/notifyFg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/notify_fg"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/notifyBg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/notify_bg"
+            android:textAllCaps="false"
+            android:visibility="visible" />
+
+    </LinearLayout>
+
+    </HorizontalScrollView>
+    <ListView
+        android:layout_below="@+id/button_bar"
+        android:id="@+id/listview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_alignParentBottom="true"
+        android:choiceMode="singleChoice"
+        android:listSelector="@drawable/list_selector"
+        android:scrollbars="vertical"
+        android:smoothScrollbar="true" />
+
+    <LinearLayout
+        android:visibility="gone"
+        android:background="@drawable/bg_page"
+        android:padding="20dp"
+        android:id="@+id/about_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"  >
+
+        <ImageView
+            android:layout_gravity="center_horizontal"
+            android:background="#8000"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:adjustViewBounds="true"
+            android:src="@mipmap/ic_launcher"
+            />
+        <TextView
+            android:background="@android:color/white"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:padding="30dp"
+            android:layout_height="0dp"
+            android:textSize="20sp"
+            android:autoLink="web"
+            android:text="all-AudioDemo\n\nDemonstrate how to play audio files.\n \nBy Dennis Lang\nVisit website:\nhttp://landenlabs.com\n"
+        />
+
+        <Button
+            android:id="@+id/about_close"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Close"
+            />
+    </LinearLayout>
+</RelativeLayout>
