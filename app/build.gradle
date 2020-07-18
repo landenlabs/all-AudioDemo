@@ -5,7 +5,7 @@ android {
 
     defaultConfig {
         applicationId 'com.wsi.all_audiodemo'
-        minSdkVersion 19
+        minSdkVersion 23
         targetSdkVersion 29
         versionCode 50614
         versionName '5.06.14'
@@ -17,14 +17,30 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-
-            /*
-            applicationVariants.all { variant ->
-                appendVersionNameVersionCode(variant, defaultConfig)
-            }
-            */
         }
     }
+
+    lintOptions {
+        abortOnError false
+        disable 'DefaultLocale', 'SimpleDateFormat', 'InflateParams', 'SpUsage',
+                'UseCompoundDrawables', 'HandlerLeak', 'ViewConstructor', 'SetTextI18n',
+                'RtlSymmetry', 'RtlHardcoded', 'ContentDescription',
+                'MissingTranslation', 'ValidFragment', 'UnusedAttribute',
+                'FieldCanBeLocal', 'LocalSuppress', 'HardcodedText', 'Typos'
+    }
+
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            // Enable verbose lint reporting during build.
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -40,9 +56,11 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 }
 
+// Rename app
 android.applicationVariants.all { variant ->
     variant.outputs.all {
-        outputFileName = "all-AudioDemo-${variant.name}-${variant.versionName}.apk"
+        def ourname = project.parent.name
+        outputFileName = "$ourname-${variant.name}-${variant.versionName}.apk"
         println "out name= $outputFileName"
     }
 }
