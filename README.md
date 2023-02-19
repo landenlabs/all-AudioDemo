@@ -4,9 +4,6 @@ Android - Audio Demo    ( Dec-2019  )
 Demonstrate playing audio mp3 files from **res/raw** and **assets** directories.
 Also includes sample code to play audio from external souerces such as **SD card** or **network**.
 
-**Warning** the audio files are pulled from various sources with undefined copyright, so use at your own peril.
-
-
   [![Build status](https://travis-ci.org/landenlabs/all_AudioDemo.svg?branch=master)](https://travis-ci.org/landenlabs/all_AudioDemo)
   
 

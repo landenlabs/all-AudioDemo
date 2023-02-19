@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 33
 
     defaultConfig {
-        applicationId 'com.wsi.all_audiodemo'
+        applicationId 'com.landenlabs.all_audiodemo'
         minSdkVersion 23
-        targetSdkVersion 29
-        versionCode 50614
-        versionName '5.06.14'
+        targetSdkVersion 33
+        versionCode 51118
+        versionName '5.11.18'
     }
     applicationVariants.all { variant ->
         variant.resValue "string", "versionName", "version " + variant.versionName
@@ -36,11 +36,6 @@ android {
         }
     }
 
-    packagingOptions {
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE.txt'
-    }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -49,11 +44,11 @@ android {
 
 dependencies {
     // implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.1.0'
-    implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.8.0'
+    // implementation 'androidx.annotation:annotation:1.5.0'
 
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    // implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 }
 
 // Rename app
