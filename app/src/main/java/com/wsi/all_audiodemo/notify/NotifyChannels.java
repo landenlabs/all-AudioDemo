@@ -16,7 +16,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @author Dennis Lang
- * @see http://LanDenLabs.com/
+ * @see https://lanDenLabs.com/
  */
 
 package com.wsi.all_audiodemo.notify;
@@ -55,14 +55,14 @@ import java.util.Objects;
 @SuppressWarnings({"ConstantConditions", "ConstantIfStatement", "unused", "SameParameterValue"})
 public class NotifyChannels {
 
-    private static ChannelSpec[] CHANNEL_SPECS = new ChannelSpec[]{
+    private static final ChannelSpec[] CHANNEL_SPECS = new ChannelSpec[]{
             new ChannelSpec(Channel.ALERTS, "Alerts", Priority.LOW, true, R.raw.alert_alarm_clock, true),
             new ChannelSpec(Channel.LIGHTNING, "Lightning",  Priority.HIGH, true),
             new ChannelSpec(Channel.PRECIPITATION, "Precipitation", Priority.HIGH),
             new ChannelSpec(Channel.STATION, "Station", Priority.LOW),
             new ChannelSpec(Channel.BANNER, "Banner", Priority.LOW),
     };
-    private static Map<Channel, ChannelSpec> CHANNEL_SPEC_MAP = new HashMap<>();
+    private static final Map<Channel, ChannelSpec> CHANNEL_SPEC_MAP = new HashMap<>();
 
     public static final @RawRes int INVALID_RES_ID = -1;
 
@@ -199,9 +199,7 @@ public class NotifyChannels {
          */
         PowerManager powerManager = getServiceSafe(context, Context.POWER_SERVICE);
         boolean isLocked = false;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT_WATCH) {
-            isLocked = !powerManager.isInteractive();
-        }
+        isLocked = !powerManager.isInteractive();
 
         KeyguardManager keyguardManager = getServiceSafe(context, Context.KEYGUARD_SERVICE);
         isLocked = Objects.requireNonNull(keyguardManager).inKeyguardRestrictedInputMode() || isLocked;

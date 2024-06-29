@@ -16,18 +16,18 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @author Dennis Lang
- * @see http://LanDenLabs.com/
+ * @see https://lanDenLabs.com/
  */
 
 package com.wsi.all_audiodemo;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -57,15 +57,15 @@ import static com.wsi.all_audiodemo.notify.NotifyUtil.notifySound;
  * playing  either in foreground or background.
  * <p>
  * Also include some code to show information in notification bar using channels.
- * 
+ * <p>
  * Audio play techniques:
- *  1. Access mp3 via Raw asset path, play in foreground
- *  2. Access mp3 via Asset path, play in foreground
- *  3. Access mp3 via network
- *  4. Play and notify in foreground using notification
- *  5. Play and notify in Background using notification
+ * <li> 1. Access mp3 via Raw asset path, play in foreground
+ * <li> 2. Access mp3 via Asset path, play in foreground
+ * <li> 3. Access mp3 via network
+ * <li> 4. Play and notify in foreground using notification
+ * <li> 5. Play and notify in Background using notification
  */
-@SuppressWarnings({"ConstantConditions", "ConstantIfStatement"})
+@SuppressWarnings({"ConstantConditions", "ConstantIfStatement", "JavadocLinkAsPlainText"})
 public class MainActivity extends AppCompatActivity {
 
     String mSound = "alert_air_horn";
@@ -81,13 +81,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (Build.VERSION.SDK_INT >= 21) {
-            Toolbar toolbar = findViewById(R.id.app_bar);
-            setSupportActionBar(toolbar);
+        Toolbar toolbar = findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
 
-            // versionName built at build time.
-            setTitle(getString(R.string.app_name) + " " + getString(R.string.versionName));
-        }
+        // versionName built at build time.
+        setTitle(getString(R.string.app_name) + " " + getString(R.string.versionName));
 
         setupSoundSelectionView();
         mSoundName = findViewById(R.id.soundName);
@@ -95,40 +93,15 @@ public class MainActivity extends AppCompatActivity {
 
 
         // 1. Access mp3 via Raw asset path, play in foreground
-        findViewById(R.id.playRawBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playRawSound(mSound);
-            }
-        });
+        findViewById(R.id.playRawBtn).setOnClickListener(v -> playRawSound(mSound));
         // 2. Access mp3 via Asset path, play in foreground
-        findViewById(R.id.playAssetBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playAssetSound(mSound);
-            }
-        });
+        findViewById(R.id.playAssetBtn).setOnClickListener(v -> playAssetSound(mSound));
         // 3. Access mp3 via network, play in foreground
-        findViewById(R.id.playNetworkBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playNetworkSound("http://landenlabs.com/android/audiodemo/sounds/" + mSound + ".mp3");
-            }
-        });
+        findViewById(R.id.playNetworkBtn).setOnClickListener(v -> playNetworkSound("https://landenlabs.com/android/audiodemo/sounds/" + mSound + ".mp3"));
         // 4. Play and notify in foreground using notification
-        findViewById(R.id.notifyFg).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                notifySoundFg(mSound);
-            }
-        });
+        findViewById(R.id.notifyFg).setOnClickListener(v -> notifySoundFg(mSound));
         // 5. Play and notify in Background using notification
-        findViewById(R.id.notifyBg).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                notifySoundBg(mSound);
-            }
-        });
+        findViewById(R.id.notifyBg).setOnClickListener(v -> notifySoundBg(mSound));
 
         // Setup notification - used for option #4 and #5 above.
         NotifyChannels.initChannels(this);
@@ -138,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         // Handle Notification button press.
         Intent intent = getIntent();
         if (intent != null) {
-            String action = intent.getAction();
+            // String action = intent.getAction();
             String intentSound = intent.getStringExtra(NotifyUtil.EXTRA_AUDIO);
             if (!TextUtils.isEmpty(intentSound)) {
                 for (int idx = 0; idx < mListView.getAdapter().getCount(); idx++) {
@@ -167,15 +140,9 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.menu_about) {
             mAboutView.setVisibility(View.VISIBLE);
-            mAboutView.findViewById(R.id.about_close).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mAboutView.setVisibility(View.GONE);
-                }
-            });
+            mAboutView.findViewById(R.id.about_close).setOnClickListener(v -> mAboutView.setVisibility(View.GONE));
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -201,9 +168,7 @@ public class MainActivity extends AppCompatActivity {
             this.startActivity(i);
         }
 
-        new Handler().postDelayed (() -> {
-            notifySound(getApplicationContext(), assetName, NotifyUtil.getIsForeground(mSoundName));
-        }, 2000);
+        new Handler().postDelayed (() -> notifySound(getApplicationContext(), assetName, NotifyUtil.getIsForeground(mSoundName)), 2000);
     }
 
     /**
@@ -249,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
                 path = RESOURCE_PATH + getPackageName() + "/raw/" + rawName;
             } else {
                 // Build path using resource number
+                @SuppressLint("DiscouragedApi")
                 int resID = getResources().getIdentifier(rawName, "raw", getPackageName());
                 path = RESOURCE_PATH + getPackageName() + File.separator + resID;
             }
@@ -258,21 +224,15 @@ public class MainActivity extends AppCompatActivity {
             mMediaPlayer = new MediaPlayer();
             mMediaPlayer.setVolume(1.0f, 1.0f);
             mMediaPlayer.setLooping(false);
-            mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    Toast.makeText(getApplicationContext(),
-                            "start playing sound", Toast.LENGTH_SHORT).show();
-                    mMediaPlayer.start();
-                }
+            mMediaPlayer.setOnPreparedListener(mp -> {
+                Toast.makeText(getApplicationContext(),
+                        "start playing sound", Toast.LENGTH_SHORT).show();
+                mMediaPlayer.start();
             });
-            mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                @Override
-                public boolean onError(MediaPlayer mp, int what, int extra) {
-                    Toast.makeText(getApplicationContext(), String.format(Locale.US,
-                            "Media error what=%d extra=%d", what, extra), Toast.LENGTH_LONG).show();
-                    return false;
-                }
+            mMediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                Toast.makeText(getApplicationContext(), String.format(Locale.US,
+                        "Media error what=%d extra=%d", what, extra), Toast.LENGTH_LONG).show();
+                return false;
             });
 
             //
@@ -319,17 +279,17 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Play sound file from remote location.
      * Accessing external data not found inside package. SD card or network.
-     *   "/sdcard/sample.mp3";
-     *   "http://www.bogotobogo.com/Audio/sample.mp3";
-     *
+     *   <li> "/sdcard/sample.mp3";
+     *   <li>"http://www.bogotobogo.com/Audio/sample.mp3";
+     * <p>
      * May require settings in AndroidManifest to enable ClearText and internet permission.
-     *
-     * See supported file formats
-     *   https://developer.android.com/guide/topics/media/media-formats
+     * <p>
+     * See supported file formats:
+     *   <li>https://developer.android.com/guide/topics/media/media-formats
      * See enable cleartext if network path is using http. Not required for https
-     *   https://stackoverflow.com/questions/45940861/android-8-cleartext-http-traffic-not-permitted
+     *   <li> https://stackoverflow.com/questions/45940861/android-8-cleartext-http-traffic-not-permitted
      * Add network permission to AndroidManifest.xml
-     *   <uses-permission android:name="android.permission.INTERNET" />
+     *   <li> <uses-permission android:name="android.permission.INTERNET" />
      */
     private void playNetworkSound(String netUrl) {
         try {
@@ -338,21 +298,15 @@ public class MainActivity extends AppCompatActivity {
             mMediaPlayer = new MediaPlayer();
             // mMediaPlayer.setVolume(1.0f, 1.0f);
             mMediaPlayer.setLooping(false);
-            mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    Toast.makeText(getApplicationContext(),
-                            "start playing sound", Toast.LENGTH_SHORT).show();
-                    mMediaPlayer.start();
-                }
+            mMediaPlayer.setOnPreparedListener(mp -> {
+                Toast.makeText(getApplicationContext(),
+                        "start playing sound", Toast.LENGTH_SHORT).show();
+                mMediaPlayer.start();
             });
-            mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                @Override
-                public boolean onError(MediaPlayer mp, int what, int extra) {
-                    Toast.makeText(getApplicationContext(), String.format(Locale.US,
-                            "Media error what=%d extra=%d", what, extra), Toast.LENGTH_LONG).show();
-                    return false;
-                }
+            mMediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                Toast.makeText(getApplicationContext(), String.format(Locale.US,
+                        "Media error what=%d extra=%d", what, extra), Toast.LENGTH_LONG).show();
+                return false;
             });
 
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -418,13 +372,9 @@ public class MainActivity extends AppCompatActivity {
                 values);
 
         mListView.setAdapter(adapter);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mSound = (String) mListView.getItemAtPosition(position);
-                mSoundName.setText(mSound);
-            }
+        mListView.setOnItemClickListener((parent, view, position, id) -> {
+            mSound = (String) mListView.getItemAtPosition(position);
+            mSoundName.setText(mSound);
         });
     }
 }

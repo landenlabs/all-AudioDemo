@@ -17,7 +17,7 @@
   ~ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   ~
   ~ @author Dennis Lang
-  ~ @see http://LanDenLabs.com/
+  ~ @see https://lanDenLabs.com/
   -->
 
 <RelativeLayout
@@ -142,7 +142,7 @@
             android:layout_height="0dp"
             android:textSize="20sp"
             android:autoLink="web"
-            android:text="all-AudioDemo\n\nDemonstrate how to play audio files.\n \nBy Dennis Lang\nVisit website:\nhttp://landenlabs.com\n"
+            android:text="all-AudioDemo\n\nDemonstrate how to play audio files.\n \nBy Dennis Lang\nVisit website:\nhttps://landenlabs.com\n"
         />
 
         <Button

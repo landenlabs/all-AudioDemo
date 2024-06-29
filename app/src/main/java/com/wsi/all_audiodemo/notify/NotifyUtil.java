@@ -16,7 +16,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @author Dennis Lang
- * @see http://LanDenLabs.com/
+ * @see https://lanDenLabs.com/
  */
 package com.wsi.all_audiodemo.notify;
 
@@ -36,6 +36,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RawRes;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.NotificationCompat;
 
 import com.wsi.all_audiodemo.MainActivity;
@@ -91,8 +92,7 @@ public class NotifyUtil {
 
     public static boolean getIsForeground(@NonNull View view) {
         Rect rect = new Rect();
-        boolean isForeground = view != null && view.isShown()
-                && view.getGlobalVisibleRect(rect) && !rect.isEmpty();
+        boolean isForeground = view.isShown() && view.getGlobalVisibleRect(rect) && !rect.isEmpty();
         isForeground |=  view.getWindowSystemUiVisibility() == View.VISIBLE
                 && view.getWindowVisibility() == View.VISIBLE;
         return isForeground;
@@ -127,9 +127,7 @@ public class NotifyUtil {
         //  Build notification - use OS specific API.
 
         Bitmap iconBM  = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            iconBM = ((BitmapDrawable)context.getDrawable(R.mipmap.ic_launcher)).getBitmap();
-        }
+        iconBM = ((BitmapDrawable) AppCompatResources.getDrawable(context, R.mipmap.ic_launcher)).getBitmap();
 
         PendingIntent pendingIntent = NotifyUtil.getPendingAction(context, assetName, "replay");
         NotificationCompat.Builder builder;

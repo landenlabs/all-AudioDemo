@@ -16,7 +16,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @author Dennis Lang
- * @see http://LanDenLabs.com/
+ * @see https://lanDenLabs.com/
  */
 
 package com.wsi.all_audiodemo.notify;
@@ -43,6 +43,7 @@ import android.util.Log;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -85,6 +86,7 @@ public class NotifyService extends Service {
         }
     }
 
+
     @Override
     public void onCreate() {
         Log.i(TAG, "onCreate() called");
@@ -99,7 +101,11 @@ public class NotifyService extends Service {
         IntentFilter intentFilter = new IntentFilter();
         // intentFilter.addAction(actionShow);
         intentFilter.addAction(actionSound);
-        registerReceiver(receiver, intentFilter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            registerReceiver(receiver, intentFilter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(receiver, intentFilter);
+        }
     }
 
     /*
@@ -199,7 +205,7 @@ public class NotifyService extends Service {
             if (config.getActivityName() != null) {
                 try {
                     Intent intent = new Intent(context, Class.forName(config.getActivityName()));
-                    pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                    pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
                 } catch (ClassNotFoundException ne) {
                     Log.w(TAG, config.getActivityName() + " was not found - " + ne.getMessage());
                 }
@@ -207,7 +213,7 @@ public class NotifyService extends Service {
             return pendingIntent;
         } else {
             Intent intent = new Intent(action);
-            return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+            return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         }
     }
 

@@ -16,7 +16,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @author Dennis Lang
- * @see http://LanDenLabs.com/
+ * @see https://lanDenLabs.com/
  */
 package com.wsi.all_audiodemo.notify;
 
@@ -32,6 +32,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 
@@ -176,7 +177,7 @@ public class ManageService {
         }
 
         @Override
-        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+        public void onActivitySaveInstanceState(Activity activity, @NonNull Bundle outState) {
             Log.i(TAG, "onSaveInstanceState():" + activity.getClass().getSimpleName());
         }
 

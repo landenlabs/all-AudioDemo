@@ -13,22 +13,22 @@ Apk available in **app/build** directory
 
 
 Audio demo website
-[http://landenlabs.com/android/audiodemo/audiodemo.html](http://landenlabs.com/android/audiodemo/audiodemo.html)
+[https://landenlabs.com/android/audiodemo/audiodemo.html](https://landenlabs.com/android/audiodemo/audiodemo.html)
 
 ***
 Mp3 sound files stored in **assets/sounds/** directory
 ***
-![assets directory](http://landenlabs.com/android/audiodemo/dir-assets.png)
+![assets directory](https://landenlabs.com/android/audiodemo/dir-assets.png)
 
 ***
 Mp3 sound files stored in **res/raw/** directory
 ***
-![res/raw directory](http://landenlabs.com/android/audiodemo/dir-res-raw.png)
+![res/raw directory](https://landenlabs.com/android/audiodemo/dir-res-raw.png)
 
 ***
 Simple audio demnonstration program screen:
 ***
-![screen](http://landenlabs.com/android/audiodemo/screen.png)
+![screen](https://landenlabs.com/android/audiodemo/screen.png)
 
 ***
 Sample code to play audio mp3 file using Status Notifcation service:
