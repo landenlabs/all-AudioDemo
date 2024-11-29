@@ -1,4 +1,4 @@
-// All-Flip
+// all-AudioDemo
 // module build.gradle
 
 plugins {
@@ -119,9 +119,9 @@ android.applicationVariants.configureEach {
 }
 
 tasks.register('listFlavors') {
-    description = 'List Flip flavors'
+    description = 'List flavors'
     doLast {
-        println("--- Flip Flavors ---")
+        println("--- Flavors ---")
         /*
         android.productFlavors.all {
             flavor -> println("  " + flavor.name + "\t" + android.defaultConfig.applicationId + flavor.applicationIdSuffix)
@@ -136,9 +136,9 @@ tasks.register('listFlavors') {
 }
 
 tasks.register('listrepos') {
-    description = 'List auto repositories'
+    description = 'List repositories'
     doLast {
-        println "Flip Repositories:"
+        println " Repositories:"
         project.repositories.each { printf("  %15s %s\n", it.name, it.url) }
     }
 }
