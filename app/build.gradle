@@ -8,14 +8,14 @@ plugins {
 
 android {
     namespace 'com.wsi.all_audiodemo'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId 'com.landenlabs.all_audiodemo'
         minSdkVersion 23
-        targetSdkVersion 34
-        versionCode 60629
-        versionName '6.06.29'
+        targetSdkVersion 35
+        versionCode 60630
+        versionName '6.06.30'
 
         // Limit languages to following list.
         resourceConfigurations += ['en', 'es']
