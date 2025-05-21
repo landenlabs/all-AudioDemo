@@ -16,7 +16,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @author Dennis Lang
- * @see https://lanDenLabs.com/
+ * @see https://LanDenLabs.com/
  */
 
 package com.wsi.all_audiodemo;
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         // 2. Access mp3 via Asset path, play in foreground
         findViewById(R.id.playAssetBtn).setOnClickListener(v -> playAssetSound(mSound));
         // 3. Access mp3 via network, play in foreground
-        findViewById(R.id.playNetworkBtn).setOnClickListener(v -> playNetworkSound("https://landenlabs.com/android/audiodemo/sounds/" + mSound + ".mp3"));
+        findViewById(R.id.playNetworkBtn).setOnClickListener(v -> playNetworkSound("https://LanDenLabs.com/android/audiodemo/sounds/" + mSound + ".mp3"));
         // 4. Play and notify in foreground using notification
         findViewById(R.id.notifyFg).setOnClickListener(v -> notifySoundFg(mSound));
         // 5. Play and notify in Background using notification

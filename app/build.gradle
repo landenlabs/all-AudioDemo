@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId 'com.landenlabs.all_audiodemo'
-        minSdkVersion 23
+        minSdkVersion 26
         targetSdkVersion 35
         versionCode 60630
         versionName '6.06.30'
@@ -46,6 +46,8 @@ android {
         android.signingConfigs.release.keyPassword = props.keyAliasPassword
         println("Setting release to " + signingConfigs.release.storeFile.absolutePath )
     }
+
+    buildFeatures.buildConfig = true
 
     buildTypes {
         release {

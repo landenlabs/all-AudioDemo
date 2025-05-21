@@ -16,7 +16,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @author Dennis Lang
- * @see https://lanDenLabs.com/
+ * @see https://LanDenLabs.com/
  */
 
 package com.wsi.all_audiodemo.notify;

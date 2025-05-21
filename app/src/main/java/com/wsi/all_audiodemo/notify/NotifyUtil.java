@@ -16,7 +16,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @author Dennis Lang
- * @see https://lanDenLabs.com/
+ * @see https://LanDenLabs.com/
  */
 package com.wsi.all_audiodemo.notify;
 
@@ -132,15 +132,10 @@ public class NotifyUtil {
         PendingIntent pendingIntent = NotifyUtil.getPendingAction(context, assetName, "replay");
         NotificationCompat.Builder builder;
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel notificationChannel =
-                    NotifyChannels.setSound(context, NotifyChannels.Channel.ALERTS, soundRes);
-            builder = new NotificationCompat.Builder(context,
-                    notificationChannel.getId());
-        } else {
-            //noinspection deprecation
-            builder = new NotificationCompat.Builder(context);
-        }
+        NotificationChannel notificationChannel =
+                NotifyChannels.setSound(context, NotifyChannels.Channel.ALERTS, soundRes);
+        builder = new NotificationCompat.Builder(context,
+                notificationChannel.getId());
 
         builder
                 .setContentTitle("Played sound")
