@@ -30,6 +30,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -168,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
             this.startActivity(i);
         }
 
-        new Handler().postDelayed (() -> notifySound(getApplicationContext(), assetName, NotifyUtil.getIsForeground(mSoundName)), 2000);
+        new Handler(Looper.getMainLooper()).postDelayed (() -> notifySound(getApplicationContext(), assetName, NotifyUtil.getIsForeground(mSoundName)), 2000);
     }
 
     /**
@@ -309,7 +310,10 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             });
 
-            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mMediaPlayer.setAudioAttributes(new android.media.AudioAttributes.Builder()
+                    .setUsage(android.media.AudioAttributes.USAGE_MEDIA)
+                    .setContentType(android.media.AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build());
             mMediaPlayer.setDataSource(netUrl);
             mMediaPlayer.prepareAsync();        // Use prepareAsync for external sources.
 

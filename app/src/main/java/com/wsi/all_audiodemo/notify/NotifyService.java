@@ -124,6 +124,7 @@ public class NotifyService extends Service {
         if (android.os.Build.VERSION.SDK_INT >= 33) {
             config = intent.getParcelableExtra(KEY_CONFIG, Config.class);
         } else {
+            //noinspection deprecation
             config = intent.getParcelableExtra(KEY_CONFIG);
         }
         // no need to restart this service
@@ -148,6 +149,7 @@ public class NotifyService extends Service {
     public void onTaskRemoved(Intent rootIntent) {
         Log.i(TAG, "onTaskRemoved() called");
         stopSelf();
+        //noinspection deprecation
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcastSync(new Intent(ACTION_UNBIND));
     }
 

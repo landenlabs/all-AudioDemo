@@ -118,6 +118,7 @@ public class ManageService {
         bindToDebugOverlayService();
     }
 
+    @SuppressWarnings("deprecation")
     private void bindToDebugOverlayService() {
         boolean bound = application.bindService(NotifyService.createIntent(application),
                 serviceConnection, Context.BIND_AUTO_CREATE);
@@ -128,6 +129,7 @@ public class ManageService {
                 .registerReceiver(receiver, new IntentFilter(NotifyService.ACTION_UNBIND));
     }
 
+    @SuppressWarnings("deprecation")
     private void unbindFromDebugOverlayService() {
         if (overlayService != null) {
             application.unbindService(serviceConnection);

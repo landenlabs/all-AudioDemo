@@ -187,8 +187,8 @@ public class NotifyChannels {
     @NonNull
     private static <T> T getServiceSafe(@Nullable Context context, String service) {
         Objects.requireNonNull(context);
-        //noinspection unchecked
-        return (T)Objects.requireNonNull(context.getSystemService(service));
+        Object systemService = context.getSystemService(service);
+        return (T) Objects.requireNonNull(systemService);
     }
 
     public static boolean isDeviceLocked(Context context) {
@@ -202,7 +202,11 @@ public class NotifyChannels {
         isLocked = !powerManager.isInteractive();
 
         KeyguardManager keyguardManager = getServiceSafe(context, Context.KEYGUARD_SERVICE);
-        isLocked = keyguardManager.inKeyguardRestrictedInputMode() || isLocked;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            isLocked = keyguardManager.isDeviceLocked() || isLocked;
+        } else {
+            isLocked = keyguardManager.inKeyguardRestrictedInputMode() || isLocked;
+        }
         return isLocked;
     }
 
