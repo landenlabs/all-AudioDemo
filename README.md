@@ -1,5 +1,8 @@
-# a LanDen Labs - AudioDemo
+# LanDen Labs - AudioDemo
 Android - Audio Demo    ( Dec-2019  )
+
+<img src="screehshots/landenlabs.webp" width="300" alt="Logo">
+
 
 Demonstrate playing audio mp3 files from **res/raw** and **assets** directories.
 Also includes sample code to play audio from external souerces such as **SD card** or **network**.

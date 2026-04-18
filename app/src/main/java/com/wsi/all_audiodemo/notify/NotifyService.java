@@ -121,7 +121,11 @@ public class NotifyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "onStartCommand() called");
-        config = intent.getParcelableExtra(KEY_CONFIG);
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            config = intent.getParcelableExtra(KEY_CONFIG, Config.class);
+        } else {
+            config = intent.getParcelableExtra(KEY_CONFIG);
+        }
         // no need to restart this service
         return Service.START_NOT_STICKY;
     }

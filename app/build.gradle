@@ -3,75 +3,72 @@
 
 plugins {
     id ("com.android.application")
-    id ("org.jetbrains.kotlin.android") // Prevents duplicate kotlin warnings
 }
 
 android {
-    namespace 'com.wsi.all_audiodemo'
-    compileSdk 35
+    namespace = 'com.wsi.all_audiodemo'
+    compileSdk = 36
 
     defaultConfig {
-        applicationId 'com.landenlabs.all_audiodemo'
+        applicationId = 'com.landenlabs.all_audiodemo'
         minSdkVersion 26
-        targetSdkVersion 35
-        versionCode 60630
-        versionName '6.06.30'
+        targetSdk = 36
+
+        versionCode = 60419
+        versionName = '6.04.19'
+        // Restore the versionName resource for layouts
+        resValue "string", "versionName", "v" + versionName
 
         // Limit languages to following list.
         resourceConfigurations += ['en', 'es']
         ndk {
-            // abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
             abiFilters 'armeabi-v7a', 'arm64-v8a'
         }
 
         buildConfigField "long", "BuildTimeMilli", System.currentTimeMillis() + "L"
     }
 
-    applicationVariants.configureEach { variant ->
-        variant.resValue "string", "versionName", "version " + variant.versionName
-    }
-
     signingConfigs {
         release
     }
 
-    // Load signing config (does not work for command line builds)
-    // println("Setting release=${rootDir}/release.properties")
+    // Load signing config
     if (file("${rootDir}/release.properties").exists()) {
         def props = new Properties()
         props.load(new FileInputStream(file("${rootDir}/release.properties")))
-        android.signingConfigs.release.storeFile = file(props.keyStore)
-        android.signingConfigs.release.storePassword = props.keyStorePassword
-        android.signingConfigs.release.keyAlias = props.keyAlias
-        android.signingConfigs.release.keyPassword = props.keyAliasPassword
+        signingConfigs.release {
+            storeFile = file(props.keyStore)
+            storePassword = props.keyStorePassword
+            keyAlias = props.keyAlias
+            keyPassword = props.keyAliasPassword
+        }
         println("Setting release to " + signingConfigs.release.storeFile.absolutePath )
     }
 
-    buildFeatures.buildConfig = true
+    buildFeatures {
+        buildConfig = true
+        resValues = true
+    }
 
     buildTypes {
         release {
             // Enables code shrinking, obfuscation, and optimization.
-            minifyEnabled true
+            minifyEnabled = true
 
             // List of resources removed at end of generated mapping file:
             // grep unused ./app/build/outputs/mapping/demoRelease/resources.txt
-            shrinkResources true
+            shrinkResources = true
 
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig = signingConfigs.release
+
+            ndk {
+                // abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+                abiFilters 'armeabi-v7a', 'arm64-v8a'
+            }
         }
     }
-
-    lint {
-        abortOnError false
-        disable 'DefaultLocale', 'SimpleDateFormat', 'InflateParams', 'SpUsage',
-                'UseCompoundDrawables', 'HandlerLeak', 'ViewConstructor', 'SetTextI18n',
-                'RtlSymmetry', 'RtlHardcoded', 'ContentDescription',
-                'MissingTranslation', 'ValidFragment', 'UnusedAttribute',
-                'FieldCanBeLocal', 'LocalSuppress', 'HardcodedText', 'Typos'
-    }
-
+    
     gradle.projectsEvaluated {
         tasks.withType(JavaCompile).tap {
             configureEach {
@@ -81,58 +78,47 @@ android {
         }
     }
 
-    /*
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        // https://developer.android.com/studio/write/java8-support
+        // isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
-     */
+
+    lint {
+        abortOnError = false
+        disable 'DefaultLocale', 'SimpleDateFormat', 'InflateParams', 'SpUsage', 'UseCompoundDrawables', 'HandlerLeak', 'ViewConstructor', 'SetTextI18n', 'RtlSymmetry', 'RtlHardcoded', 'ContentDescription', 'MissingTranslation', 'ValidFragment', 'UnusedAttribute'
+    }
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'com.google.android.material:material:1.12.0'
+    implementation libs.androidx.appcompat
+    implementation libs.google.material
+    implementation libs.androidx.localbroadcastmanager
 }
 
 // Rename app
 //  {project}-{flavor}-{buildType}.apk -> {parentProject}-{versionNameSuffix}-{buildType}-{versionStr}.apk
-//  Ex:
-//           app-release.apk -> flip-release-1.02.3456.apk
-//           app-release.aab -> flip-release-1.4.27.aab
-android.applicationVariants.configureEach {
-    variant -> variant.outputs.configureEach {
-        def ourname = project.parent.name
-        def buildType = outputFileName.replaceAll(".*(debug|release).*", '$1')
-        def versionStr = versionName.replaceAll("-.*", "")
-        def flavor = variant.mergedFlavor.versionNameSuffix.toString().replace("null", "")
-        // ext.flavorName = variant.name
-        def newNameRoot = "${ourname}${flavor}-${buildType}-${versionStr}"
-        outputFileName = "${newNameRoot}.apk"
-
-        // sign{flavor}{buildType}Bundle
-        //   Ex: signAppDebugBundle
-        def bundleFinalizeTaskName = "sign${variant.name.capitalize()}Bundle"
-        tasks.named(bundleFinalizeTaskName) {
-            def file = finalBundleFile.asFile.get()
-            def finalFile = new File(file.parentFile, "${newNameRoot}.aab")
-            finalBundleFile.set(finalFile)
+androidComponents {
+    onVariants(selector().all(), { variant ->
+        variant.outputs.forEach { output ->
+            def ourName = project.parent.name
+            def buildType = variant.buildType
+            def versionStr = variant.outputs[0].versionName.get().replaceAll("-.*", "")
+            def flavor = variant.flavorName ?: ""
+            def newNameRoot = "${ourName}${flavor}-${buildType}-${versionStr}"
+            output.outputFileName.set("${newNameRoot}.apk")
         }
-    }
+    })
 }
 
 tasks.register('listFlavors') {
     description = 'List flavors'
     doLast {
         println("--- Flavors ---")
-        /*
-        android.productFlavors.all {
-            flavor -> println("  " + flavor.name + "\t" + android.defaultConfig.applicationId + flavor.applicationIdSuffix)
-        }
-         */
         printf("   %-20s %-20s %-40s   %s\n", "--Package--", "--Name--", "--Description/Flavor--", "--isMinified--")
-        project.android.applicationVariants.all { variant ->
-            // def applicationId = [variant.mergedFlavor.applicationId, variant.buildType.applicationIdSuffix].findAll().join()
-            printf("   %-20s %-20s %-40s   %b\n", variant.getApplicationId(), variant.name, variant.description, variant.buildType.isMinifyEnabled())
+        android.applicationVariants.configureEach { variant ->
+            printf("   %-20s %-20s %-40s   %b\n", variant.applicationId, variant.name, variant.description, variant.buildType.minifyEnabled)
         }
     }
 }
