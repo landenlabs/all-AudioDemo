@@ -1,16 +1,16 @@
 # LanDen Labs - AudioDemo
 Android - Audio Demo    ( Dec-2019  )
 
-<img src="screehshots/landenlabs.webp" width="300" alt="Logo">
+<img src="screenshots/landenlabs.webp" width="300" alt="Logo">
 
 
 Demonstrate playing audio mp3 files from **res/raw** and **assets** directories.
 Also includes sample code to play audio from external souerces such as **SD card** or **network**.
 
   [![Build status](https://travis-ci.org/landenlabs/all_AudioDemo.svg?branch=master)](https://travis-ci.org/landenlabs/all_AudioDemo)
-  
 
-Apk available in **app/build** directory 
+
+Apk available in **app/build** directory
 
 ![assets directory](https://raw.github.com/landenlabs2/all_AudioDemo/master/screenshots/audiodemo.png)
 
@@ -142,8 +142,8 @@ private void playRawSound(String rawName) {
 ```
 
 ***
-Sample code to play mp3 audio file from assets directory. 
-Notes all files in assets directory are merged together and you need to provide the file offset and length to the MediaPlayer to setup the data source. 
+Sample code to play mp3 audio file from assets directory.
+Notes all files in assets directory are merged together and you need to provide the file offset and length to the MediaPlayer to setup the data source.
 ***
 ```javascript
 private void playSound3(String assetName) {
